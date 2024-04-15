@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obsitica Web</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 flex flex-col items-center justify-center h-screen">
+    <div class="p-6 rounded-lg shadow-lg bg-white">
+        <img src="obsitica.png" alt="Obsitica Logo" class="max-w-xs md:max-w-sm lg:max-w-md">
+        <input type="text" id="habitica-user-id" placeholder="Habitica User ID"
+            class="mt-2 px-3 py-2 bg-gray-200 rounded-md w-full text-sm" value="">
+        <input type="text" id="api-token" placeholder="API Token"
+            class="mt-2 px-3 py-2 bg-gray-200 rounded-md w-full text-sm" value="">
+        <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
+            onclick="storeCredentialsAndFetchTasks()">
+            Generate
+        </button>
+        <div id="output" class="mt-4 p-4 bg-gray-100 rounded-md w-full"></div>
+    </div>
+
+
+    <script>
+        async function fetchHabiticaTasks() {
+            const userId = document.getElementById('habitica-user-id').value;
+            const apiToken = document.getElementById('api-token').value;
+            const apiUrl = "https://habitica.com/api/v3/tasks/user";
+
+            if (!userId || !apiToken) {
+                alert("Please enter both your Habitica User ID and API Token.");
+                return;
+            }
+
+            try {
+                const response = await fetch(apiUrl, {
+                    headers: {
+                        'x-api-user': userId,
+                        'x-api-key': apiToken
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+
+                if (data.success !== true) {
+                    throw new Error('API response is invalid. Please check your credentials.');
+                }
+
+                renderTasks(data.data);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+                document.getElementById('output').textContent = 'Error fetching data. Please check the console for more information.';
+            }
+        }
+
+        function renderTasks(tasks) {
+            const filteredHabits = tasks.filter(task => task.type === 'habit' && (task.counterUp > 0 || task.counterDown < 0));
+            const habitsOutput = filteredHabits.map(task => {
+                return `* Habit clicked: ${task.text} - Positive: ${task.counterUp}, Negative: ${task.counterDown}`;
+            }).join('<br>');
+
+            const filteredDailies = tasks.filter(task => task.type === 'daily' && task.completed);
+            const dailiesOutput = filteredDailies.map(task => {
+                return `* ${task.text}`;
+            }).join('<br>');
+
+            const today = new Date();
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = ''; // Clear previous output and use innerHTML to support <br> tags
+
+            // Create and append the results
+            outputDiv.innerHTML = `## Achievements on ${today.toISOString().split('T')[0]}<br>${habitsOutput}<br><br>## Completed Dailies<br>${dailiesOutput}`;
+        }
+
+        // Call this function when the button is clicked
+        function storeCredentialsAndFetchTasks() {
+            // Store data
+            localStorage.setItem('habiticaUserId', document.getElementById('habitica-user-id').value);
+            localStorage.setItem('apiToken', document.getElementById('api-token').value);
+            // Fetch and display tasks
+            fetchHabiticaTasks();
+        }
+
+    </script>
+</body>
+
+</html>
