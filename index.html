@@ -96,12 +96,16 @@
 
             const filteredDailies = tasks.filter(task => task.type === 'daily' && task.completed);
             const dailiesOutput = filteredDailies.map(task => {
-                return `* ${task.text}`;
+                return `* Completed Daily: ${task.text}`;
             }).join('<br>');
 
             const today = new Date();
+            const outputText = `## Achievements on ${today.toISOString().split('T')[0]}<br>${habitsOutput}<br><br>## Completed Dailies<br>${dailiesOutput}`;
+
             const outputDiv = document.getElementById('output');
-            outputDiv.innerHTML = `## Achievements on ${today.toISOString().split('T')[0]}<br>${habitsOutput}<br><br>## Completed Dailies<br>${dailiesOutput}`;
+            outputDiv.innerHTML = outputText;
+
+            copyToClipboard(outputText); // Copies to clipboard when rendering
         }
 
         async function generateTodo() {
@@ -109,7 +113,7 @@
             const apiToken = document.getElementById('api-token').value;
             const apiUrl = "https://habitica.com/api/v3/tasks/user?type=todos";
 
-            if (!userId || !apiToken) {
+            if (!userId || apiToken) {
                 alert("Please enter both your Habitica User ID and API Token.");
                 return;
             }
@@ -141,23 +145,28 @@
 
         function renderTodos(todos) {
             const todoOutput = todos.filter(todo => !todo.completed).map(todo => {
-                // Notes should be on a new line directly after the task if present.
                 const notesOutput = todo.notes ? `<br>    _${todo.notes}_` : '';
-
-                // Subtasks should be indented and start on a new line if present.
                 const subtasksOutput = todo.checklist.length > 0
-                    ? `<br>    ` + todo.checklist.map(check =>
-                        `- [${check.completed ? 'x' : ' '}] ${check.text}`
-                    ).join('<br>    ') // Join subtasks with a line break.
+                    ? `<br>    ` + todo.checklist.map(check => `- [${check.completed ? 'x' : ' '}] ${check.text}`).join('<br>    ')
                     : '';
 
-                // Combine the task text, notes, and subtasks, with subtasks directly after notes.
                 return `- [ ] ${todo.text}${notesOutput}${subtasksOutput}`;
-            }).join('<br>'); // Each task separated by a single line break.
+            }).join('<br>');
 
-            // Prepend a title and wrap with <pre> to preserve formatting.
+            const outputText = `<pre>### TODO:<br>${todoOutput}</pre>`;
+
             const outputDiv = document.getElementById('output');
-            outputDiv.innerHTML = `<pre>### TODO:<br>${todoOutput}</pre>`;
+            outputDiv.innerHTML = outputText;
+
+            copyToClipboard(outputText); // Copies to clipboard when rendering
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                console.log("Text successfully copied to clipboard.");
+            }).catch(err => {
+                console.error("Error copying to clipboard:", err);
+            });
         }
 
         function storeCredentialsAndFetchTasks() {
@@ -166,6 +175,7 @@
             fetchHabiticaTasks();
         }
     </script>
+
 </body>
 
 </html>
