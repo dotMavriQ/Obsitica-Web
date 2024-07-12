@@ -10,7 +10,7 @@ Obsitica-Web is a web service that allows you to export your Habits, ToDo's, and
 ## Usage
 To use Obsitica-Web, follow these steps:
 
-1. Visit the [Obsitica-Web](https://dotmavriq.github.io/obsitica-web/) page.
+1. Visit the [Obsitica-Web]([https://dotmavriq.github.io/Obsitica-Web) page.
 2. Enter your Habitica User ID and API Token to connect your account.
 3. Select the type of data you want to export (Habits, ToDo's, Dailies).
 4. Click on the "Export" button to generate the formatted output.
