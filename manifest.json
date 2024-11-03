@@ -1,0 +1,10 @@
+{
+  "id": "obsitica",
+  "name": "Obsitica",
+  "version": "1.0.0",
+  "minAppVersion": "0.12.0",
+  "description": "Integrate Habitica with Obsidian to track habits and dailies directly within your vault.",
+  "author": "Jonatan Jansson (aka DotMavriQ)",
+  "authorUrl": "https://github.com/dotMavriQ",
+  "isDesktopOnly": false
+}
