@@ -27,11 +27,78 @@
         content="Integrate your Habitica with Obsitica for better productivity and task management.">
     <meta name="twitter:image" content="obsitica.png">
     <meta name="twitter:url" content="https://dotmavriq.github.io/obsitica-web/">
+
+    <style>
+        body {
+            background-color: #282828;
+            color: #ebdbb2;
+        }
+
+        .bg-white {
+            background-color: #3c3836;
+        }
+
+        .bg-gray-100 {
+            background-color: #504945;
+        }
+
+        .bg-gray-200 {
+            background-color: #665c54;
+        }
+
+        .bg-blue-500 {
+            background-color: #83a598;
+        }
+
+        .bg-blue-600 {
+            background-color: #458588;
+        }
+
+        .bg-purple-500 {
+            background-color: #d3869b;
+        }
+
+        .bg-purple-600 {
+            background-color: #b16286;
+        }
+
+        .text-white {
+            color: #fbf1c7;
+        }
+
+        .text-sm {
+            color: #ebdbb2;
+        }
+
+        .hover\:bg-blue-600:hover {
+            background-color: #458588;
+        }
+
+        .hover\:bg-purple-600:hover {
+            background-color: #b16286;
+        }
+
+        .output-container {
+            max-height: none;
+            overflow: visible;
+            white-space: pre-wrap;
+            /* Preserve whitespace and line breaks */
+            word-wrap: break-word;
+            /* Break long words to fit within the container */
+        }
+
+        pre {
+            white-space: pre-wrap;
+            /* Preserve whitespace and line breaks */
+            word-wrap: break-word;
+            /* Break long words to fit within the container */
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100 flex flex-col items-center justify-center h-screen">
-    <div class="p-6 rounded-lg shadow-lg bg-white">
-        <img src="obsitica.png" alt="Obsitica Logo" class="max-w-xs md:max-w-sm lg:max-w-md">
+    <div class="p-6 rounded-lg shadow-lg bg-white w-full max-w-md">
+        <img src="obsitica.png" alt="Obsitica Logo" class="w-full object-center object-contain">
         <input type="text" id="habitica-user-id" placeholder="Habitica User ID"
             class="mt-2 px-3 py-2 bg-gray-200 rounded-md w-full text-sm" value="">
         <input type="text" id="api-token" placeholder="API Token"
@@ -49,7 +116,7 @@
             Generate TODO
         </button>
 
-        <div id="output" class="mt-4 p-4 bg-gray-100 rounded-md w-full max-h-96 overflow-auto"></div>
+        <div id="output" class="mt-4 p-4 bg-gray-100 rounded-md w-full output-container"></div>
     </div>
 
     <script>
@@ -142,22 +209,22 @@
         function renderTodos(todos) {
             const todoOutput = todos.filter(todo => !todo.completed).map(todo => {
                 // Notes should be on a new line directly after the task if present.
-                const notesOutput = todo.notes ? `<br>    _${todo.notes}_` : '';
+                const notesOutput = todo.notes ? `\n    _${todo.notes}_` : '';
 
                 // Subtasks should be indented and start on a new line if present.
                 const subtasksOutput = todo.checklist.length > 0
-                    ? `<br>    ` + todo.checklist.map(check =>
+                    ? `\n    ` + todo.checklist.map(check =>
                         `- [${check.completed ? 'x' : ' '}] ${check.text}`
-                    ).join('<br>    ') // Join subtasks with a line break.
+                    ).join('\n    ') // Join subtasks with a line break.
                     : '';
 
                 // Combine the task text, notes, and subtasks, with subtasks directly after notes.
                 return `- [ ] ${todo.text}${notesOutput}${subtasksOutput}`;
-            }).join('<br>'); // Each task separated by a single line break.
+            }).join('\n'); // Each task separated by a single line break.
 
             // Prepend a title and wrap with <pre> to preserve formatting.
             const outputDiv = document.getElementById('output');
-            outputDiv.innerHTML = `<pre>### TODO:<br>${todoOutput}</pre>`;
+            outputDiv.innerHTML = `<pre>### TODO:\n${todoOutput}</pre>`;
         }
 
         function storeCredentialsAndFetchTasks() {
